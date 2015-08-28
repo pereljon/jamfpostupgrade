@@ -98,7 +98,7 @@ def main():
                 description='Checking JSS connectiont', icon=vbp_logo)
     result = execute_command(['jamf', 'checkJSSConnection'])
     logging.debug(result)
-    exit(0)
+
     # Update management
     logging.info('Update management')
     jamf_helper(window_type='fs', heading='Please wait while the upgrade completes...', description='Update management',
