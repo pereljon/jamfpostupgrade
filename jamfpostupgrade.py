@@ -82,46 +82,53 @@ def jamf_helper(window_type, title=None, heading=None, description=None, icon=No
 
 
 def main():
+    vbp_logo = '/Library/Application Support/JAMF/VBP/VBPLogo.png'
+
     logging.basicConfig(filename='/Library/Application Support/JAMF/logs/jamfpostupgrade.log', level=logging.DEBUG)
 
     # Sleep for 30
     time.sleep(30)
-
     # Unload loginwindow
     logging.info('Unload loginwindow')
     execute_command(['launchctl', 'unload', '/System/Library/LaunchDaemons/com.apple.loginwindow.plist'])
 
     # Checking JSS connection
     logging.info('Checking JSS connection')
-    jamf_helper(window_type='fs', heading='Post upgrade:', description='Checking JSS connectiont')
+    jamf_helper(window_type='fs', heading='Please wait while the upgrade completes...',
+                description='Checking JSS connectiont', icon=vbp_logo)
     result = execute_command(['jamf', 'checkJSSConnection'])
     logging.debug(result)
-
+    exit(0)
     # Update management
     logging.info('Update management')
-    jamf_helper(window_type='fs', heading='Post upgrade:', description='Update management')
+    jamf_helper(window_type='fs', heading='Please wait while the upgrade completes...', description='Update management',
+                icon=vbp_logo)
     result = execute_command(['jamf', 'manage', '-verbose'])
     logging.debug(result)
 
     # Remove OS Install Data
     logging.info('Remove OS X Install Data folder')
-    jamf_helper(window_type='fs', heading='Post upgrade:', description='Remove OS X Install Data folder')
+    jamf_helper(window_type='fs', heading='Please wait while the upgrade completes...',
+                description='Remove OS X Install Data folder', icon=vbp_logo)
     shutil.rmtree('/OS X Install Data', ignore_errors=True)
 
     # Remove iPhoto
     logging.info('Remove iPhoto')
-    jamf_helper(window_type='fs', heading='Post upgrade:', description='Remove iPhoto')
+    jamf_helper(window_type='fs', heading='Please wait while the upgrade completes...', description='Remove iPhoto',
+                icon=vbp_logo)
     shutil.rmtree('/Applications/iPhoto.app', ignore_errors=True)
 
     # Install cached packages
     logging.info('Installing cached packages')
-    jamf_helper(window_type='fs', heading='Post upgrade:', description='Install cached packages')
+    jamf_helper(window_type='fs', heading='Please wait while the upgrade completes...',
+                description='Install cached packages', icon=vbp_logo)
     result = execute_command(['/usr/sbin/jamf', 'installAllCached'])
     logging.debug(result)
 
     # Software update
     logging.info('Software update')
-    jamf_helper(window_type='fs', heading='Post upgrade:', description='Software update')
+    jamf_helper(window_type='fs', heading='Please wait while the upgrade completes...', description='Software update',
+                icon=vbp_logo)
     result = execute_command(['/usr/sbin/softwareupdate', '-ia'])
     logging.debug(result)
 
@@ -133,19 +140,22 @@ def main():
 
     # Fix dock
     logging.info('Fix docks')
-    jamf_helper(window_type='fs', heading='Post upgrade:', description='Fix dock')
+    jamf_helper(window_type='fs', heading='Please wait while the upgrade completes...', description='Fix dock',
+                icon=vbp_logo)
     result = execute_command(['/usr/sbin/jamf', 'fixDocks'])
     logging.debug(result)
 
     # Update inventory
     logging.info('Update inventory')
-    jamf_helper(window_type='fs', heading='Post upgrade:', description='Update inventory')
+    jamf_helper(window_type='fs', heading='Please wait while the upgrade completes...', description='Update inventory',
+                icon=vbp_logo)
     result = execute_command(['/usr/sbin/jamf', 'recon'])
     logging.debug(result)
 
     # Fix permissions
     logging.info('Fix permissions')
-    jamf_helper(window_type='fs', heading='Post upgrade:', description='Fix permissions')
+    jamf_helper(window_type='fs', heading='Please wait while the upgrade completes...', description='Fix permissions',
+                icon=vbp_logo)
     result = execute_command(['/usr/sbin/jamf', 'fixPermissions', '-target', '/'])
     logging.debug(result)
 
@@ -157,12 +167,12 @@ def main():
         logging.info('Remove launchdaemon')
         os.remove('/Library/LaunchDaemons/com.github.jamfpostupgrade.plist')
 
-    # Load loginwindow0
-    #logging.info('Load loginwindow')
-    #execute_command(['launchctl', 'load', '/System/Library/LaunchDaemons/com.apple.loginwindow.plist'])
+    # Load loginwindow
+    # logging.info('Load loginwindow')
+    # execute_command(['launchctl', 'load', '/System/Library/LaunchDaemons/com.apple.loginwindow.plist'])
 
     # Script auto-destruct
-    # logging.info('Script auto-destruct')
+    logging.info('Script auto-destruct and reboot')
     execute_command(['srm', sys.argv[0]])
     execute_command(['reboot'])
 
